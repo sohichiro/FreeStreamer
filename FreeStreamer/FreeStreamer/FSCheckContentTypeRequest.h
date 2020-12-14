@@ -123,6 +123,8 @@ typedef NS_ENUM(NSInteger, FSFileFormat) {
 /**
  * Cancels the request.
  */
+- (void)startWithRequest:(NSURLRequest *)request;
+
 - (void)cancel;
 
 @end

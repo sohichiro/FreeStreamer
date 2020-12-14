@@ -59,6 +59,34 @@
     }
 }
 
+- (void)startWithRequest:(NSURLRequest *)request {
+    if (_task) {
+        return;
+    }
+    
+    _format = kFSFileFormatUnknown;
+    _playlist = NO;
+    _contentType = @"";
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
+                                                          delegate:self
+                                                     delegateQueue:[NSOperationQueue mainQueue]];
+    
+    @synchronized (self) {
+        _task = [session dataTaskWithRequest:request];
+    }
+    [_task resume];
+    
+    if (!_task) {
+#if defined(DEBUG) || (TARGET_IPHONE_SIMULATOR)
+        NSLog(@"FSCheckContentTypeRequest: Unable to open connection for URL: %@", _url);
+#endif
+        
+        self.onFailure();
+        return;
+    }
+}
+
 - (void)cancel
 {
     if (!_task) {
